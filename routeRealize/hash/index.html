@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前端路由实现-hash</title>
+  <style>
+    *{
+      border: none;
+      outline: none;
+      padding: 0;
+      margin: 0;
+    }
+    .btn-container{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-container .route-item{
+      width: 30%;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-sizing: border-box;
+      border: 1px solid #eee;
+      color: black;
+      text-decoration: none;
+    }
+    #hash-content{
+      text-align: center;
+      font-size: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="btn-container">
+    <a class="route-item home" href="">主页</a>
+    <a class="route-item market" href="">商城</a>
+    <a class="route-item mine" href="">我的</a>
+  </div>
+  <div id="hash-content"></div>
+  <script src="./index.js"></script>
+</body>
+</html>
