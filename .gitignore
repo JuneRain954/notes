@@ -1,2 +1,6 @@
 # 忽略 .vscode 目录下的文件
 .vscode/
+# 忽略 node_modules 目录
+node_modules/
+#忽略任意目录下 node_modules 目录下的文件
+**/node_modules/

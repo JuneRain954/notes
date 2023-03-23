@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据双向绑定</title>
+  <style>
+    #app{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <input type="text" v-model="title">
+    <h2>{{ title }}</h2>
+    <button v-on:click="handleBtnClick">初始化数据</button>
+  </div>
+  <script src="./core/index.js" type="module"></script>
+</body>
+</html>
