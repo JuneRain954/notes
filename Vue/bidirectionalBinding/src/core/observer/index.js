@@ -1,7 +1,7 @@
 // 观察提供的数据
 
-import { isObject } from '../../lib/index.js';
-import { Dep } from './dep.js';
+import { isObject } from '../../../lib/index.js';
+import { Dep } from '../dep/index.js';
 
 class Observer{
   data = undefined;

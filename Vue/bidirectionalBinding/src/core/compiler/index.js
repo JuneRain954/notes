@@ -1,6 +1,6 @@
 // 解析 dom 元素，并实现更新
 
-import { Watcher } from "./watcher.js";
+import { Watcher } from "../watcher/index.js";
 
 const NODE_TYPE_MAP = {
   ELEMENT_NODE: 1,
@@ -9,10 +9,10 @@ const NODE_TYPE_MAP = {
 
 const NODE_COMPILE_MAP = {
   [NODE_TYPE_MAP.ELEMENT_NODE]: function(node){
-    this.compileElement(node);
+    this.compileElementNode(node);
   },
   [NODE_TYPE_MAP.TEXT_NODE]: function(node){
-    this.compileText(node);
+    this.compileTextNode(node);
   },
 }
 
@@ -33,36 +33,38 @@ export class Compolier{
   init(){
     if(this.el){
       // 解析元素
-      this.parseElement(this.el);
+      this.parseElement();
     }else{
       throw new Error("Invaild parameter el");
     }
   }
 
-  parseElement(el){
+  parseElement(el = this.el){
     const childNodes = el.childNodes;
     const len = childNodes.length;
     for(let i = 0; i < len; i++){
       const node = childNodes[i];
       let compolier = NODE_COMPILE_MAP[node.nodeType];
       compolier && compolier.call(this, node);
-      const nodeList = node.childNodes;
-      if(nodeList && nodeList.length) this.parseElement(node);
+      if(node.childNodes?.length) this.parseElement(node);
     }
   }
 
-  compileText(node){
+  compileTextNode(node){
     const reg = /\{\{(.*)+\}\}/;
-    const parseRes = reg.exec(node.nodeValue);
-    const key = (parseRes && parseRes[1]) ? parseRes[1].trim() : "";
-    if(!key) return;
-    let pattern = node.nodeValue;
-    this.updateText(node, pattern, key);
+    const res = reg.exec(node.textContent);
+    if(!res) return;
+    const pattern = node.textContent;
+    const fullMatch = res[0];
+    const key = res[1].trim();
+    this.updateText(node, pattern, fullMatch, this.vm[key]);
     // 监听数据更新，实现数据更新(Data) => 试图更新(View)
-    new Watcher(this.vm, key, this.updateText.bind(this, node, pattern, key));
+    new Watcher(this.vm, key, (val) => {
+      this.updateText(node, pattern, fullMatch, val);
+    });
   }
 
-  compileElement(node){
+  compileElementNode(node){
     const attrs = node.attributes;
     const len = attrs.length;
     for(let i = 0; i < len; i++){
@@ -72,17 +74,14 @@ export class Compolier{
     }
   }
 
-  updateText(node, pattern, key){
-    const reg = /\{\{(.*)+\}\}/;
-    const value = this.vm[key];
-    node.nodeValue = pattern.replace(reg, (_, match) => value);
+  updateText(node, pattern, replaceStr, value){
+    node.textContent = pattern.replaceAll(replaceStr, value);
   }
 
   handleDirective(node, directive, expression){
     if(directive.indexOf("v-") === -1) return;
-    const regIsOn = /v\-on:(.*)+/;
-    const regIsModel = /v\-model/;
-    let result = regIsOn.exec(directive);
+    const isOn = /v\-on:(.*)+/;
+    let result = isOn.exec(directive);
     if(result){
       // 处理事件类型指令
       const evtName = result[1].trim();
@@ -90,25 +89,26 @@ export class Compolier{
       node.addEventListener(evtName, method.bind(this.vm));
     }else{
       // 处理model指令
-      result = regIsModel.exec(directive);
+      const isModel = /v\-model/;
+      result = isModel.exec(directive);
       if(result){
         const val = this.vm[expression];
-        this.updateModel(node, expression, val);
+        this.updateModel(node, val);
         // 监听元素 input 事件，相应更新数据 View => Data
-        node.addEventListener(EVENT_TYPE_MAP.INPUT, this.updateModel.bind(this, node, expression));
+        node.addEventListener(EVENT_TYPE_MAP.INPUT, (evt) => {
+          const value = evt.target.value;
+          this.vm[expression] = value;
+        });
         // 监听数据更新，并相应更新视图 Data => View
-        new Watcher(this.vm, expression, () => {
-          this.updateModel.call(this, node, expression, this.vm[expression]);
+        new Watcher(this.vm, expression, (val) => {
+          this.updateModel.call(this, node, val);
         });
       }
     }
   }
 
-  updateModel(node, key, valueOrEvt){
-    if(valueOrEvt.target){
-      this.vm[key] = valueOrEvt.target.value;
-    }else{
-      node.value = valueOrEvt;
-    }
+  updateModel(node, value){
+    if(node.value === value) return;
+    node.value = value;
   }
 }

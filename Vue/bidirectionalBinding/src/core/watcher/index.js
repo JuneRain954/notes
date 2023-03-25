@@ -1,6 +1,6 @@
 // 观察者
 
-import { Dep } from './dep.js';
+import { Dep } from '../dep/index.js';
 
 
 export class Watcher{
@@ -12,11 +12,14 @@ export class Watcher{
     this.vm = vm;
     this.expression = expression;
     this.callback = callback;
-    // 绑定更新事件
-    this.value = this.getValue();
+    this.init();
   }
 
-  getValue(){
+  init(){
+    this.bind();
+  }
+
+  bind(){
     const { vm, expression } = this;
     Dep.target = this;
     const value = vm[expression]; // 触发 getter , 收集依赖
