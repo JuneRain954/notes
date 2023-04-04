@@ -59,19 +59,9 @@ function isInstanceOfObject(data){
  * @returns 已实现继承的空白数据对象
  */
 function createEmptyItem(data){
-  const { MAP, SET } = TYPE_MAP;
-  const type = getType(data);
-  let emptyItem = undefined;
-  if([MAP, SET].includes(type)){
-    // MAP, SET 类型的空白数据，需要通过调用给定对象的构造函数 constructor 来创建，从而实现继承
-    // ! 若通过下方 手动设置原型 的方式创建空白对象，会导致调用MAP的 set, get 函数，SET 的 add 函数报错
-    const Ctor = data.constructor;
-    emptyItem = new Ctor();
-  }else{
-    // 手动设置原型，实现继承
-    const prototype = Object.getPrototypeOf(data);
-    emptyItem = Object.create(prototype);
-  }
+  // 通过调用给定对象的构造函数 constructor 来创建，从而实现继承
+  const Ctor = data.constructor;
+  let emptyItem = new Ctor();
   return emptyItem;
 }
 
