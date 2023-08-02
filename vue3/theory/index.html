@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vue3原理学习</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    #app{
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #app .reactive{
+      display: flex;  
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+    }
+    .reactive input{
+      height: 40px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <section class="reactive">
+      <h2>响应式：输入框输入内容，下方同步显示输入内容</h2>
+      <input type="text" id="reactiveInput" placeholder="输入内容">
+      <input type="text" id="effectInput" disabled>
+    </section>
+  </div> 
+  <script type="module" src="./index.js"></script>
+</body>
+</html>
