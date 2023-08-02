@@ -35,7 +35,16 @@ export function track(target, key) {
     if (!effectSet)
         effectMap.set(key, (effectSet = new Set()));
     // 3. 收集依赖
-    effectSet.add(activeEffect);
+    trackEffect(effectSet);
+}
+/**
+ * 保存依赖
+ * @param deps 依赖集合
+ */
+export function trackEffect(deps) {
+    if (!activeEffect)
+        return;
+    deps.add(activeEffect);
 }
 /**
  * 触发依赖
@@ -52,7 +61,14 @@ export function trigger(target, key) {
     if (!effectSet)
         return;
     // 3. 触发依赖
-    effectSet.forEach(function (effect) { return effect.scheduler ? effect.scheduler() : effect.run(); });
+    triggerEffect(effectSet);
+}
+/**
+ * 执行依赖
+ * @param deps 依赖集合
+ */
+export function triggerEffect(deps) {
+    deps.forEach(function (effect) { return effect.scheduler ? effect.scheduler() : effect.run(); });
 }
 /**
  * 生成依赖实例

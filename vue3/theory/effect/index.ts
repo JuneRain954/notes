@@ -36,7 +36,16 @@ export function track(target: object, key: string): void{
   let effectSet = effectMap.get(key);
   if(!effectSet) effectMap.set(key, ( effectSet = new Set() ));
   // 3. 收集依赖
-  effectSet.add(activeEffect);
+  trackEffect(effectSet);
+}
+
+/**
+ * 保存依赖
+ * @param deps 依赖集合
+ */
+export function trackEffect(deps: Set<ReactiveEffect>){
+  if(!activeEffect) return;
+  deps.add(activeEffect as ReactiveEffect);
 }
 
 
@@ -53,7 +62,15 @@ export function trigger(target: object, key: string): void{
   const effectSet = effectMap.get(key);
   if(!effectSet) return;
   // 3. 触发依赖
-  effectSet.forEach((effect: ReactiveEffect) => effect.scheduler ? effect.scheduler() : effect.run());
+  triggerEffect(effectSet);
+}
+
+/**
+ * 执行依赖
+ * @param deps 依赖集合
+ */
+export function triggerEffect(deps: Set<ReactiveEffect>){
+  deps.forEach((effect: ReactiveEffect) => effect.scheduler? effect.scheduler() : effect.run());
 }
 
 
