@@ -2,6 +2,7 @@ import { reactive } from './reactive/index.js';
 import { ref } from './ref/index.js';
 import { effect } from './effect/index.js';
 import { computed } from './computed/index.js';
+import { watch } from './watch/index.js';
 
 const reactiveInput: HTMLInputElement = document.querySelector("#reactiveInput") as HTMLInputElement;
 const effectInput: HTMLInputElement = document.querySelector("#effectInput") as HTMLInputElement;
@@ -54,3 +55,7 @@ rightValInput.addEventListener("input", function(){
   rightVal.value = +this.value;
   descElement.textContent = desc.value;
 })
+
+watch(() => data.val, (val, oldVal) => {
+  console.log("[watch] data.val: ", {val, oldVal});
+}, { immediate: true })
