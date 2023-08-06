@@ -1,0 +1,129 @@
+/**
+ * 深拷贝
+ */
+
+import { JS_DATA_TYPE } from '../utils/const/index.js';
+import { getType, isInstanceOf } from '../utils/tools/index.js';
+
+const globalMap = new WeakMap();
+
+// 拷贝函数处理器
+const COPIER_HANDLER = {
+  [JS_DATA_TYPE.OBJECT]: objectCopier,
+  [JS_DATA_TYPE.ARRAY]: arrayCopier,
+  [JS_DATA_TYPE.MAP]: mapCopier,
+  [JS_DATA_TYPE.SET]: setCopier,
+  [JS_DATA_TYPE.FUNCTION]: functionCopier,
+  [JS_DATA_TYPE.DATE]: dateCopier,
+  [JS_DATA_TYPE.REGEXP]: regExpCopier,
+};
+
+/**
+ * 深拷贝
+ * @param data 被拷贝的数据
+ * @returns 拷贝数据
+ */
+export function deepClone(data: any){
+  // 普通类型数据则直接返回
+  if(!isInstanceOf(data, Object)) return data;
+  // 循环引用处理
+  if(globalMap.has(data)) return globalMap.get(data);
+  // 1. 创建对应类型的空白数据
+  let clone = getRelativeEmptyData(data);
+  globalMap.set(data, clone);
+  // 2. 复制
+  const copierHandler: Func = COPIER_HANDLER[getType(data)] ?? function(){ return data };
+  clone = copierHandler(clone, data);
+  // 3. 返回
+  return clone;
+}
+
+/**
+ * 获取对应类型的空白数据
+ * @param data 被克隆的数据
+ * @returns 对应类型的空白数据
+ */
+function getRelativeEmptyData(data: any){
+  const Ctor = data.constructor;
+  return new Ctor();
+}
+
+/**
+ * 对象拷贝
+ * @param clone 拷贝对象
+ * @param data 被拷贝的对象
+ * @returns 拷贝对象
+ */
+function objectCopier(clone: Record<any, any>, data: Record<any, any>): Record<any, any>{
+  Object.keys(data).forEach((key: string) => (clone[key] = deepClone(data[key])));
+  return clone;
+}
+
+/**
+ * 数组拷贝
+ * @param clone 拷贝数组
+ * @param data 被拷贝的数组
+ * @returns 拷贝数组
+ */
+function arrayCopier(clone: any[], data: any[]): any[]{
+  data.forEach((item) => clone.push(deepClone(item)));
+  return clone;
+}
+
+/**
+ * 映射数据拷贝
+ * @param clone 拷贝映射数据
+ * @param data 被拷贝的映射数据
+ * @returns 拷贝映射数据
+ */
+function mapCopier(clone: Map<any, any>, data: Map<any, any>): Map<any, any>{
+  data.forEach((val, key) => clone.set(key, deepClone(val)));
+  return clone;
+}
+
+/**
+ * 集合数据拷贝
+ * @param clone 拷贝集合数据
+ * @param data 被拷贝的集合数据
+ * @returns 拷贝集合数据
+ */
+function setCopier(clone: Set<any>, data: Set<any>): Set<any>{
+  data.forEach((val) => clone.add(deepClone(val)));
+  return clone;
+}
+
+/**
+ * 函数拷贝
+ * @param clone 拷贝函数
+ * @param data 被拷贝的函数
+ * @returns 拷贝函数
+ */
+function functionCopier(clone: Func, data: Func): Func{
+  clone = function(this: any, ...args: any){
+    return data.call(this, ...args);
+  }
+  return clone;
+}
+
+/**
+ * 日期数据拷贝
+ * @param colne 拷贝日期数据
+ * @param data 被拷贝的日期数据
+ * @returns 拷贝日期数据
+ */
+function dateCopier(colne: Date | number, data: Date | number): Date {
+  colne = new Date(data);
+  return colne;
+}
+
+/**
+ * 正则拷贝
+ * @param clone 拷贝正则
+ * @param data 被拷贝的正则
+ * @returns 拷贝正则
+ */
+function regExpCopier(clone: RegExp, data: RegExp): RegExp{
+  clone = new RegExp(data.source, data.flags);
+  return clone;
+}
+
