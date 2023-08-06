@@ -107,13 +107,13 @@ function functionCopier(clone: Func, data: Func): Func{
 
 /**
  * 日期数据拷贝
- * @param colne 拷贝日期数据
+ * @param clone 拷贝日期数据
  * @param data 被拷贝的日期数据
  * @returns 拷贝日期数据
  */
-function dateCopier(colne: Date | number, data: Date | number): Date {
-  colne = new Date(data);
-  return colne;
+function dateCopier(clone: Date | number, data: Date | number): Date {
+  clone = new Date(data);
+  return clone;
 }
 
 /**

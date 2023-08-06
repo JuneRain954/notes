@@ -111,13 +111,13 @@ function functionCopier(clone, data) {
 }
 /**
  * 日期数据拷贝
- * @param colne 拷贝日期数据
+ * @param clone 拷贝日期数据
  * @param data 被拷贝的日期数据
  * @returns 拷贝日期数据
  */
-function dateCopier(colne, data) {
-    colne = new Date(data);
-    return colne;
+function dateCopier(clone, data) {
+    clone = new Date(data);
+    return clone;
 }
 /**
  * 正则拷贝
