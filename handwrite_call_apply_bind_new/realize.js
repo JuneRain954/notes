@@ -70,8 +70,7 @@ function realizeBind(){
 // 实现 new 
 export function _new(fn, ...args){
   // 1. 创建空对象并绑定原型 
-  const prototype = Object.getPrototypeOf(fn);
-  const targetObj = Object.create(prototype);
+  const targetObj = Object.create(fn.prototype);
   // 2. 执行函数获取返回值
   let res = fn.call(targetObj, ...args);
   // 3. 处理返回值
